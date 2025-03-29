@@ -1,0 +1,58 @@
+/* Основные стили */
+QMainWindow {
+    background-color: white;
+    font-family: Arial;
+    font-size: 14px;
+}
+
+/* Боковая панель */
+QWidget#sidebar {
+    background-color: #f8f8f8;
+    padding: 10px;
+}
+
+QPushButton {
+    text-align: left;
+    padding: 10px;
+    border: none;
+    font-size: 16px;
+}
+
+QPushButton:hover {
+    background-color: #e0e0e0;
+}
+
+/* Заголовок */
+QLabel#titleLabel {
+    font-size: 24px;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+/* Блоки */
+QWidget#inputWidget, QWidget#outputWidget {
+    background-color: #fcfcf7;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Правая панель (настройки) */
+QWidget#settingsWidget {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Кнопки */
+QPushButton#browseButton, QPushButton#retryButton {
+    background-color: #ddd;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+QPushButton#saveSettingsButton, QPushButton#submitButton {
+    background-color: black;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
