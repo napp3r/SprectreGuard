@@ -20,6 +20,7 @@ set(PROJECT_SOURCES
     resources.qrc  # Resource file
     sidebar.h sidebar.cpp
     encryptionwidget.h encryptionwidget.cpp
+    settingswidget.h settingswidget.cpp
 )
 
 qt_add_resources(RESOURCES resources.qrc) # Explicit resource addition

@@ -2,6 +2,7 @@
 #include "historywidget.h"
 #include "obfuscationwidget.h"
 #include "encryptionwidget.h"
+#include "settingswidget.h"
 #include "sidebar.h"
 #include <QWidget>
 #include <QHBoxLayout>
@@ -38,11 +39,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     EncryptionWidget *encryptionPage = new EncryptionWidget;
     stackedWidget->addWidget(encryptionPage);
 
-    // Placeholder for Settings page
-    QWidget *settingsPage = new QWidget;
-    QLabel *settingsLabel = new QLabel("Settings Page (Placeholder)");
-    QVBoxLayout *settingsLayout = new QVBoxLayout(settingsPage);
-    settingsLayout->addWidget(settingsLabel);
+    // Settings page
+    SettingsWidget *settingsPage = new SettingsWidget;
     stackedWidget->addWidget(settingsPage);
 
     // Placeholder for Messages page

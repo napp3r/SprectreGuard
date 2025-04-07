@@ -239,3 +239,80 @@ QSlider::sub-page:horizontal {
     background: #000000;
     border-radius: 4px;
 }
+
+/* Settings page styles */
+#profilePhoto {
+    min-width: 70px;
+    min-height: 70px;
+    max-width: 70px;
+    max-height: 70px;
+    border-radius: 35px;
+    background-color: #f0f0f0;
+}
+
+#nameLabel {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#changePhotoButton {
+    color: #1976d2;
+    text-align: left;
+    padding: 0;
+    font-size: 14px;
+}
+
+#sectionLabel {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+QRadioButton {
+    margin-top: 5px;
+    margin-left: 5px;
+    font-size: 14px;
+}
+
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    border: 2px solid #999;
+    background-color: white;
+}
+
+QRadioButton::indicator:checked {
+    background-color: white;
+    border: 2px solid #1976d2;
+}
+
+QRadioButton::indicator:checked:disabled {
+    background-color: #bbbbbb;
+}
+
+QRadioButton::indicator:checked {
+    image: none;
+    background-color: white;
+    border: 2px solid #1976d2;
+}
+
+QRadioButton::indicator:checked::after {
+    content: "";
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background-color: #1976d2;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+}
+
+QPushButton#saveChangesButton {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+}
