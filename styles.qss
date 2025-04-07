@@ -1,58 +1,241 @@
-/* Основные стили */
-QMainWindow {
+/* Центральная область */
+QWidget#centralContent {
     background-color: white;
-    font-family: Arial;
-    font-size: 14px;
 }
 
-/* Боковая панель */
-QWidget#sidebar {
-    background-color: #f8f8f8;
-    padding: 10px;
+/* Рамки "Input" и "Output" */
+QFrame#inputFrame, QFrame#outputFrame {
+    border: 1px solid lightgray;
+    background-color: white;
 }
 
-QPushButton {
-    text-align: left;
-    padding: 10px;
-    border: none;
-    font-size: 16px;
-}
-
-QPushButton:hover {
-    background-color: #e0e0e0;
-}
-
-/* Заголовок */
-QLabel#titleLabel {
-    font-size: 24px;
-    font-weight: bold;
-    padding-bottom: 10px;
-}
-
-/* Блоки */
-QWidget#inputWidget, QWidget#outputWidget {
-    background-color: #fcfcf7;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-/* Правая панель (настройки) */
-QWidget#settingsWidget {
-    background-color: #f8f8f8;
-    padding: 20px;
-    border-radius: 10px;
+/* Правая боковая панель */
+QWidget#rightSidebar {
+    background-color: lightgray;
 }
 
 /* Кнопки */
-QPushButton#browseButton, QPushButton#retryButton {
-    background-color: #ddd;
-    padding: 10px;
+QPushButton#browseButton {
+    background-color: gray;
+    color: white;
+    padding: 5px;
     border-radius: 5px;
 }
 
-QPushButton#saveSettingsButton, QPushButton#submitButton {
+QPushButton#submitButton {
     background-color: black;
     color: white;
     padding: 10px;
     border-radius: 5px;
+}
+
+QPushButton#tryAgainButton {
+    background-color: lightgray;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+QPushButton#saveSettingsButton {
+    background-color: lightgray;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Заголовки (опционально: жирный шрифт уже задан в коде) */
+QLabel {
+    font-size: 14px;
+}
+
+/* History page styles */
+#titleLabel {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+QLineEdit#searchBar {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: white;
+    margin-bottom: 20px;
+}
+
+QLineEdit#searchBar:focus {
+    border-color: #2196F3;
+}
+
+QTableWidget#historyTable {
+    border: none;
+    background-color: white;
+    gridline-color: #f0f0f0;
+}
+
+QTableWidget#historyTable::item {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+QTableWidget#historyTable QHeaderView::section {
+    background-color: white;
+    padding: 12px;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    font-weight: bold;
+    color: #666;
+}
+
+QTableWidget#historyTable::item[level="high"] {
+    color: #d32f2f;
+}
+
+QTableWidget#historyTable::item[level="low"] {
+    color: #1976d2;
+}
+
+/* Level tag styles */
+.level-tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.level-high {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.level-low {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+/* Sidebar styles */
+#sidebar {
+    background-color: white;
+    border-right: none;
+    min-width: 200px;
+    max-width: 200px;
+}
+
+#sidebarTitle {
+    color: #000000;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 24px 16px 24px 16px;
+}
+
+#sidebarButton {
+    text-align: left;
+    padding: 12px 16px;
+    border: none;
+    background-color: transparent;
+    color: #000000;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+#sidebarButton:hover {
+    background-color: #f5f5f5;
+}
+
+#sidebarButton[active="true"] {
+    background-color: #f5f5f5;
+    color: #000000;
+    font-weight: normal;
+}
+
+#sidebarButton QIcon {
+    margin-right: 12px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Page titles */
+#pageTitle {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Right sidebar */
+#rightSidebar {
+    background-color: #f8f8f8;
+    border-left: 1px solid #e0e0e0;
+}
+
+/* Frames */
+#inputFrame, #outputFrame {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    min-height: 150px;
+}
+
+/* Buttons */
+#browseButton {
+    background-color: #e0e0e0;
+    color: #000000;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+}
+
+#submitButton {
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+}
+
+#tryAgainButton {
+    background-color: #e0e0e0;
+    color: #000000;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+}
+
+#saveSettingsButton {
+    background-color: #e0e0e0;
+    color: #000000;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    width: 100%;
+}
+
+/* ComboBox */
+QComboBox {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: white;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 20px;
+}
+
+/* Slider */
+QSlider::groove:horizontal {
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+}
+
+QSlider::handle:horizontal {
+    background: #666666;
+    width: 16px;
+    margin: -4px 0;
+    border-radius: 8px;
+}
+
+QSlider::sub-page:horizontal {
+    background: #000000;
+    border-radius: 4px;
 }

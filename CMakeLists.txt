@@ -17,16 +17,20 @@ set(PROJECT_SOURCES
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    resources.qrc  # Добавляем ресурсный файл в список исходников
+    resources.qrc  # Resource file
+    sidebar.h sidebar.cpp
+    encryptionwidget.h encryptionwidget.cpp
 )
 
-qt_add_resources(RESOURCES resources.qrc) # Явное добавление ресурсов
+qt_add_resources(RESOURCES resources.qrc) # Explicit resource addition
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(asd
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        ${RESOURCES}  # Добавляем ресурсы
+        ${RESOURCES}
+        historywidget.h historywidget.cpp
+        obfuscationwidget.h obfuscationwidget.cpp
     )
 else()
     if(ANDROID)

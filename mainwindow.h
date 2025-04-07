@@ -3,12 +3,13 @@
 
 #include <QMainWindow>
 #include <QPushButton>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QSlider>
-#include <QComboBox>
-#include <QFileDialog>
+#include <QStackedWidget>
+
+// Forward declarations
+class HistoryWidget;
+class ObfuscationWidget;
+class EncryptionWidget;
+class Sidebar;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -18,13 +19,11 @@ public:
     ~MainWindow();
 
 private slots:
-    void browseFile();
+    void switchPage(int index);
 
 private:
-    QLabel *inputLabel, *outputLabel;
-    QPushButton *browseButton, *submitButton, *retryButton, *saveSettingsButton;
-    QComboBox *hashTypeCombo;
-    QSlider *maxStringsSlider;
+    QStackedWidget *stackedWidget;
+    Sidebar *sidebar;
 };
 
 #endif // MAINWINDOW_H

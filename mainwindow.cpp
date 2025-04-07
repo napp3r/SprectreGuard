@@ -1,122 +1,91 @@
 #include "mainwindow.h"
+#include "historywidget.h"
+#include "obfuscationwidget.h"
+#include "encryptionwidget.h"
+#include "sidebar.h"
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QPushButton>
-#include <QComboBox>
-#include <QSlider>
-#include <QFileDialog>
-#include <QFile>
 #include <QApplication>
+#include <QFile>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-
-    // Главное окно
+    // Load stylesheet
+    QFile styleFile(":/styles.qss");
+    styleFile.open(QFile::ReadOnly);
+    QString styleSheet = QLatin1String(styleFile.readAll());
+    qApp->setStyleSheet(styleSheet);
+    
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
-    // --- Боковая панель ---
-    QVBoxLayout *sidebarLayout = new QVBoxLayout;
-    QStringList menuItems = {"Home", "Obfuscation", "Encryption", "Settings", "Messages"};
-    for (const QString &item : menuItems) {
-        QPushButton *button = new QPushButton(item);
-        sidebarLayout->addWidget(button);
+    // Create custom sidebar
+    sidebar = new Sidebar(this);
+
+    // Main content (QStackedWidget)
+    stackedWidget = new QStackedWidget;
+
+    // Home page (History)
+    HistoryWidget *historyPage = new HistoryWidget;
+    stackedWidget->addWidget(historyPage);
+
+    // Obfuscation page
+    ObfuscationWidget *obfuscationPage = new ObfuscationWidget;
+    stackedWidget->addWidget(obfuscationPage);
+
+    // Encryption page
+    EncryptionWidget *encryptionPage = new EncryptionWidget;
+    stackedWidget->addWidget(encryptionPage);
+
+    // Placeholder for Settings page
+    QWidget *settingsPage = new QWidget;
+    QLabel *settingsLabel = new QLabel("Settings Page (Placeholder)");
+    QVBoxLayout *settingsLayout = new QVBoxLayout(settingsPage);
+    settingsLayout->addWidget(settingsLabel);
+    stackedWidget->addWidget(settingsPage);
+
+    // Placeholder for Messages page
+    QWidget *messagesPage = new QWidget;
+    QLabel *messagesLabel = new QLabel("Messages Page (Placeholder)");
+    QVBoxLayout *messagesLayout = new QVBoxLayout(messagesPage);
+    messagesLayout->addWidget(messagesLabel);
+    stackedWidget->addWidget(messagesPage);
+
+    stackedWidget->setCurrentIndex(0);
+
+    // Connect sidebar buttons to page switching
+    QList<SidebarButton*> buttons;
+    buttons.append(sidebar->findChild<SidebarButton*>("homeButton"));
+    buttons.append(sidebar->findChild<SidebarButton*>("obfuscationButton"));
+    buttons.append(sidebar->findChild<SidebarButton*>("encryptionButton"));
+    buttons.append(sidebar->findChild<SidebarButton*>("settingsButton"));
+    buttons.append(sidebar->findChild<SidebarButton*>("messagesButton"));
+    
+    for (int i = 0; i < buttons.size(); i++) {
+        if (buttons[i]) {
+            connect(buttons[i], &QPushButton::clicked, this, [this, i]() {
+                switchPage(i);
+            });
+        }
     }
-    sidebarLayout->addStretch();
 
-    QWidget *sidebar = new QWidget;
-    sidebar->setLayout(sidebarLayout);
-    sidebar->setFixedWidth(200);
-    sidebar->setObjectName("sidebar");
-
-    // --- Основная часть ---
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    QLabel *titleLabel = new QLabel("Obfuscation");
-    titleLabel->setObjectName("titleLabel");
-
-    // Ввод файла
-    inputLabel = new QLabel("Select your file");
-    browseButton = new QPushButton("+ Browse");
-    browseButton->setObjectName("browseButton");
-    connect(browseButton, &QPushButton::clicked, this, &MainWindow::browseFile);
-
-    QVBoxLayout *inputLayout = new QVBoxLayout;
-    inputLayout->addWidget(inputLabel);
-    inputLayout->addWidget(browseButton);
-    inputLayout->setAlignment(Qt::AlignCenter);
-    QWidget *inputWidget = new QWidget;
-    inputWidget->setLayout(inputLayout);
-    inputWidget->setObjectName("inputWidget");
-
-    // Вывод
-    outputLabel = new QLabel("Download");
-    outputLabel->setAlignment(Qt::AlignCenter);
-    QVBoxLayout *outputLayout = new QVBoxLayout;
-    outputLayout->addWidget(outputLabel);
-    QWidget *outputWidget = new QWidget;
-    outputWidget->setLayout(outputLayout);
-    outputWidget->setObjectName("outputWidget");
-
-    mainLayout->addWidget(titleLabel);
-    mainLayout->addWidget(inputWidget);
-    mainLayout->addWidget(outputWidget);
-
-    // --- Правая панель (настройки) ---
-    QVBoxLayout *settingsLayout = new QVBoxLayout;
-    QLabel *instructionsLabel = new QLabel("We recommend doing encryption first before obfuscation for better anti-reversing");
-    instructionsLabel->setWordWrap(true);
-    settingsLayout->addWidget(instructionsLabel);
-
-    QLabel *typeLabel = new QLabel("Type");
-    hashTypeCombo = new QComboBox;
-    hashTypeCombo->addItems({"SHA-256", "MD5", "AES"});
-    settingsLayout->addWidget(typeLabel);
-    settingsLayout->addWidget(hashTypeCombo);
-
-    QLabel *maxStringsLabel = new QLabel("Max strings");
-    maxStringsSlider = new QSlider(Qt::Horizontal);
-    settingsLayout->addWidget(maxStringsLabel);
-    settingsLayout->addWidget(maxStringsSlider);
-
-    saveSettingsButton = new QPushButton("Save settings");
-    saveSettingsButton->setObjectName("saveSettingsButton");
-    settingsLayout->addWidget(saveSettingsButton);
-    settingsLayout->addStretch();
-
-    QWidget *settingsWidget = new QWidget;
-    settingsWidget->setLayout(settingsLayout);
-    settingsWidget->setFixedWidth(250);
-    settingsWidget->setObjectName("settingsWidget");
-
-    // --- Нижние кнопки ---
-    QHBoxLayout *buttonsLayout = new QHBoxLayout;
-    submitButton = new QPushButton("Submit");
-    retryButton = new QPushButton("Try again");
-    submitButton->setObjectName("submitButton");
-    retryButton->setObjectName("retryButton");
-    buttonsLayout->addWidget(submitButton);
-    buttonsLayout->addWidget(retryButton);
-
-    // --- Общий макет ---
+    // Main layout
     QHBoxLayout *mainContainer = new QHBoxLayout;
+    mainContainer->setContentsMargins(0, 0, 0, 0);
+    mainContainer->setSpacing(0);
     mainContainer->addWidget(sidebar);
-    mainContainer->addLayout(mainLayout, 1);
-    mainContainer->addWidget(settingsWidget);
+    mainContainer->addWidget(stackedWidget, 1);
 
-    QVBoxLayout *globalLayout = new QVBoxLayout;
-    globalLayout->addLayout(mainContainer);
-    globalLayout->addLayout(buttonsLayout);
-
-    centralWidget->setLayout(globalLayout);
+    centralWidget->setLayout(mainContainer);
+    
+    // Set window properties
+    setWindowTitle("SpectreGuard");
+    resize(1000, 700);
 }
 
-// --- Выбор файла ---
-void MainWindow::browseFile() {
-    QString fileName = QFileDialog::getOpenFileName(this, "Select File");
-    if (!fileName.isEmpty()) {
-        inputLabel->setText(fileName);
-    }
+void MainWindow::switchPage(int index) {
+    stackedWidget->setCurrentIndex(index);
 }
 
 MainWindow::~MainWindow() {}
