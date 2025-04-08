@@ -8,108 +8,171 @@
 #include <QSlider>
 #include <QFileDialog>
 #include <QStyle>
+#include <QMessageBox>
+#include <QSettings>
+#include <QFile>
+#include <QTextStream>
+#include <QRegularExpression>
+#include <random>
 
 ObfuscationWidget::ObfuscationWidget(QWidget *parent) : QWidget(parent) {
-    QHBoxLayout *mainLayout = new QHBoxLayout(this);
+    setupUI();
+    setupConnections();
+}
 
-    // --- Центральная область ---
-    QWidget *centralContent = new QWidget;
-    centralContent->setObjectName("centralContent");
-    QVBoxLayout *centralLayout = new QVBoxLayout(centralContent);
+void ObfuscationWidget::setupUI() {
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(30, 30, 30, 30);
+    mainLayout->setSpacing(20);
 
-    // Раздел "Input"
-    QFrame *inputFrame = new QFrame;
-    inputFrame->setObjectName("inputFrame");
-    QVBoxLayout *inputLayout = new QVBoxLayout(inputFrame);
-    QLabel *inputTitle = new QLabel("Input");
-    inputTitle->setAlignment(Qt::AlignCenter);
-    QFont boldFont = inputTitle->font();
-    boldFont.setBold(true);
-    inputTitle->setFont(boldFont);
-    selectLabel = new QLabel("Select your file");
-    selectLabel->setAlignment(Qt::AlignCenter);
-    QPushButton *browseButton = new QPushButton("+ Browse");
+    // Title
+    QLabel *titleLabel = new QLabel("Obfuscation");
+    titleLabel->setObjectName("pageTitle");
+    mainLayout->addWidget(titleLabel);
+
+    // File selection section
+    QHBoxLayout *fileLayout = new QHBoxLayout();
+    
+    selectLabel = new QLabel("No file selected");
+    selectLabel->setObjectName("fileLabel");
+    fileLayout->addWidget(selectLabel);
+    
+    QPushButton *browseButton = new QPushButton("Browse");
     browseButton->setObjectName("browseButton");
-    connect(browseButton, &QPushButton::clicked, this, &ObfuscationWidget::browseFile);
-    inputLayout->addWidget(inputTitle);
-    inputLayout->addWidget(selectLabel);
-    inputLayout->addWidget(browseButton);
-    inputLayout->setAlignment(browseButton, Qt::AlignCenter);
-    centralLayout->addWidget(inputFrame);
+    fileLayout->addWidget(browseButton);
+    
+    mainLayout->addLayout(fileLayout);
 
-    // Раздел "Output"
-    QFrame *outputFrame = new QFrame;
-    outputFrame->setObjectName("outputFrame");
-    QVBoxLayout *outputLayout = new QVBoxLayout(outputFrame);
-    QLabel *outputTitle = new QLabel("Output");
-    outputTitle->setAlignment(Qt::AlignCenter);
-    outputTitle->setFont(boldFont);
-    QLabel *downloadLabel = new QLabel("Download");
-    downloadLabel->setAlignment(Qt::AlignCenter);
-    downloadLabel->setFont(boldFont);
-    QLabel *arrowLabel = new QLabel;
-    arrowLabel->setPixmap(style()->standardIcon(QStyle::SP_ArrowDown).pixmap(32, 32));
-    arrowLabel->setAlignment(Qt::AlignCenter);
-    outputLayout->addWidget(outputTitle);
-    outputLayout->addWidget(downloadLabel);
-    outputLayout->addWidget(arrowLabel);
-    centralLayout->addWidget(outputFrame);
+    // Obfuscation type selection
+    typeCombo = new QComboBox();
+    typeCombo->addItems({"String Obfuscation", "Control Flow Obfuscation", "Data Obfuscation"});
+    mainLayout->addWidget(typeCombo);
 
-    // Нижние кнопки
-    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    // Max strings slider
+    QHBoxLayout *sliderLayout = new QHBoxLayout();
+    QLabel *sliderLabel = new QLabel("Max Strings:");
+    maxStringsSlider = new QSlider(Qt::Horizontal);
+    maxStringsSlider->setRange(10, 100);
+    maxStringsSlider->setValue(50);
+    sliderLayout->addWidget(sliderLabel);
+    sliderLayout->addWidget(maxStringsSlider);
+    mainLayout->addLayout(sliderLayout);
+
+    // Action buttons
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    
     QPushButton *submitButton = new QPushButton("Submit");
     submitButton->setObjectName("submitButton");
-    QPushButton *tryAgainButton = new QPushButton("Try again");
-    tryAgainButton->setObjectName("tryAgainButton");
     buttonLayout->addWidget(submitButton);
+    
+    QPushButton *tryAgainButton = new QPushButton("Try Again");
+    tryAgainButton->setObjectName("tryAgainButton");
     buttonLayout->addWidget(tryAgainButton);
-    centralLayout->addLayout(buttonLayout);
+    
+    mainLayout->addLayout(buttonLayout);
+    mainLayout->addStretch();
+}
 
-    mainLayout->addWidget(centralContent, 1);
-
-    // --- Правая боковая панель ---
-    QWidget *rightSidebar = new QWidget;
-    rightSidebar->setObjectName("rightSidebar");
-    QVBoxLayout *rightLayout = new QVBoxLayout(rightSidebar);
-
-    // Инструкции
-    QLabel *instructions = new QLabel("We recommend doing encryption first before obfuscation for better anti-reversing.");
-    instructions->setWordWrap(true);
-    rightLayout->addWidget(instructions);
-
-    // Выбор типа
-    QLabel *typeLabel = new QLabel("Type:");
-    QComboBox *typeCombo = new QComboBox;
-    typeCombo->addItems({"SHA-256", "MD5", "AES"});
-    typeCombo->setCurrentText("SHA-256");
-    rightLayout->addWidget(typeLabel);
-    rightLayout->addWidget(typeCombo);
-
-    // Слайдер "Max strings"
-    QLabel *maxStringsLabel = new QLabel("Max strings:");
-    QSlider *maxStringsSlider = new QSlider(Qt::Horizontal);
-    maxStringsSlider->setRange(0, 1024);
-    maxStringsSlider->setValue(256);
-    rightLayout->addWidget(maxStringsLabel);
-    rightLayout->addWidget(maxStringsSlider);
-
-    // Кнопка "Save settings"
-    QPushButton *saveSettingsButton = new QPushButton("Save settings");
-    saveSettingsButton->setObjectName("saveSettingsButton");
-    rightLayout->addWidget(saveSettingsButton);
-
-    rightLayout->addStretch();
-    mainLayout->addWidget(rightSidebar);
-
-    // Настройка отступов и расстояний
-    mainLayout->setContentsMargins(10, 10, 10, 10);
-    centralLayout->setSpacing(10);
-    rightLayout->setSpacing(10);
+void ObfuscationWidget::setupConnections() {
+    connect(findChild<QPushButton*>("browseButton"), &QPushButton::clicked, this, &ObfuscationWidget::browseFile);
+    connect(findChild<QPushButton*>("submitButton"), &QPushButton::clicked, this, &ObfuscationWidget::processFile);
+    connect(findChild<QPushButton*>("tryAgainButton"), &QPushButton::clicked, this, &ObfuscationWidget::tryAgain);
 }
 
 void ObfuscationWidget::browseFile() {
-    QString fileName = QFileDialog::getOpenFileName(this, "Select File");
+    QString fileName = QFileDialog::getOpenFileName(this,
+        "Select File to Obfuscate", "", "All Files (*.*)");
+    
     if (!fileName.isEmpty()) {
-        selectLabel->setText(fileName);
+        currentFilePath = fileName;
+        selectLabel->setText(QFileInfo(fileName).fileName());
     }
+}
+
+QString ObfuscationWidget::getObfuscationLevel() const {
+    QSettings settings;
+    return settings.value("obfuscation/level", "Low").toString();
+}
+
+bool ObfuscationWidget::obfuscateFile(const QString &inputPath, const QString &outputPath) {
+    QFile inputFile(inputPath);
+    if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return false;
+    }
+
+    QFile outputFile(outputPath);
+    if (!outputFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        inputFile.close();
+        return false;
+    }
+
+    QTextStream in(&inputFile);
+    QTextStream out(&outputFile);
+    
+    QString obfuscationLevel = getObfuscationLevel();
+    int maxStrings = maxStringsSlider->value();
+    
+    QString content = in.readAll();
+    
+    // String obfuscation using regex iterator
+    QRegularExpression stringPattern("\"[^\"]*\"");
+    QRegularExpressionMatchIterator matchIterator = stringPattern.globalMatch(content);
+    
+    int stringCount = 0;
+    QVector<QPair<int, int>> positions;
+    QStringList replacements;
+    
+    // First collect all matches and calculate replacements
+    while (matchIterator.hasNext() && stringCount < maxStrings) {
+        QRegularExpressionMatch match = matchIterator.next();
+        QString str = match.captured();
+        QString obfuscated = "QString::fromUtf8(QByteArray::fromBase64(\"" + 
+                           str.toUtf8().toBase64() + "\"))";
+        
+        positions.append(qMakePair(match.capturedStart(), match.capturedLength()));
+        replacements.append(obfuscated);
+        stringCount++;
+    }
+    
+    // Apply replacements in reverse order to avoid invalidating positions
+    for (int i = positions.size() - 1; i >= 0; --i) {
+        int pos = positions[i].first;
+        int len = positions[i].second;
+        content.replace(pos, len, replacements[i]);
+    }
+    
+    out << content;
+    
+    inputFile.close();
+    outputFile.close();
+    return true;
+}
+
+void ObfuscationWidget::processFile() {
+    if (currentFilePath.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Please select a file first.");
+        return;
+    }
+
+    QString outputPath = currentFilePath + ".obfuscated";
+    if (obfuscateFile(currentFilePath, outputPath)) {
+        QMessageBox::information(this, "Success", 
+            "File obfuscated successfully!\nSaved as: " + outputPath);
+    } else {
+        QMessageBox::critical(this, "Error", 
+            "Failed to obfuscate file. Please check file permissions.");
+    }
+}
+
+void ObfuscationWidget::tryAgain() {
+    currentFilePath.clear();
+    selectLabel->setText("No file selected");
+    typeCombo->setCurrentIndex(0);
+    maxStringsSlider->setValue(50);
+}
+
+void ObfuscationWidget::saveSettings() {
+    QSettings settings;
+    settings.setValue("obfuscation/type", typeCombo->currentText());
+    settings.setValue("obfuscation/maxStrings", maxStringsSlider->value());
 }
