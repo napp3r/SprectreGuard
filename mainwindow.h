@@ -20,10 +20,14 @@ public:
 
 private slots:
     void switchPage(int index);
+    void openFileFromHistory(const QString &filePath, const QString &processType);
 
 private:
     QStackedWidget *stackedWidget;
     Sidebar *sidebar;
+    HistoryWidget *historyPage;
+    ObfuscationWidget *obfuscationPage;
+    EncryptionWidget *encryptionPage;
 };
 
 #endif // MAINWINDOW_H

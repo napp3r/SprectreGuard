@@ -112,45 +112,63 @@ QTableWidget#historyTable::item[level="low"] {
     color: #1976d2;
 }
 
-/* Sidebar styles */
+/* Material Design Sidebar Styles */
 #sidebar {
-    background-color: white;
-    border-right: none;
-    min-width: 200px;
-    max-width: 200px;
+    background-color: #FFFFFF;
+    border-right: 1px solid #E0E0E0;
+}
+
+#sidebarHeader {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+#sidebarDivider {
+    background-color: #E0E0E0;
+    height: 1px;
+    margin: 0;
 }
 
 #sidebarTitle {
-    color: #000000;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 24px 16px 24px 16px;
+    color: #212121;
+    font-size: 18px;
+    font-weight: 500; /* Medium weight in Material Design */
+    padding: 0 8px;
 }
 
 #sidebarButton {
     text-align: left;
-    padding: 12px 16px;
     border: none;
+    border-radius: 0;
     background-color: transparent;
-    color: #000000;
+    color: #616161; /* Material Design medium emphasis text */
     font-size: 14px;
-    font-weight: normal;
+    font-weight: 500; /* Medium weight in Material Design */
+    padding-left: 16px;
+    padding-right: 16px;
+    margin: 0;
+    height: 48px; /* Standard Material Design touch target */
+    position: relative;
 }
 
 #sidebarButton:hover {
-    background-color: #f5f5f5;
+    background-color: rgba(0, 0, 0, 0.05); /* Material Design hover state */
 }
 
 #sidebarButton[active="true"] {
-    background-color: #f5f5f5;
-    color: #000000;
-    font-weight: normal;
+    background-color: rgba(98, 0, 238, 0.08); /* Light purple background */
+    color: #6200EE; /* Material Design primary color */
+    font-weight: 500;
 }
 
-#sidebarButton QIcon {
-    margin-right: 12px;
-    width: 16px;
-    height: 16px;
+#sidebarButton[active="true"]::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #6200EE; /* Material Design primary color */
 }
 
 /* Page titles */

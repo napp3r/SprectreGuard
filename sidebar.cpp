@@ -2,6 +2,10 @@
 #include <QIcon>
 #include <QStyle>
 #include <QLabel>
+#include <QPixmap>
+#include <QPainter>
+#include <QFont>
+#include <QFontDatabase>
 
 SidebarButton::SidebarButton(const QString &text, const QString &iconPath, QWidget *parent)
     : QPushButton(text, parent)
@@ -10,25 +14,46 @@ SidebarButton::SidebarButton(const QString &text, const QString &iconPath, QWidg
     setCursor(Qt::PointingHandCursor);
     setCheckable(true);
     
+    // Set fixed height for consistent Material Design look
+    setFixedHeight(48);
+    
+    // Use consistent icons with Material style
     QIcon icon;
     if (iconPath.isEmpty()) {
-        // Use minimal system icons
+        // Material-like icons
         if (text == "Home")
-            icon = style()->standardIcon(QStyle::SP_CommandLink);  // Simple arrow icon
+            icon = QIcon(":/icons/home.svg");  // Using SVG for better quality
         else if (text == "Obfuscation")
-            icon = style()->standardIcon(QStyle::SP_FileIcon);
+            icon = QIcon(":/icons/code.svg");
         else if (text == "Encryption")
-            icon = style()->standardIcon(QStyle::SP_BrowserStop);  // Lock-like icon
+            icon = QIcon(":/icons/lock.svg");
         else if (text == "Settings")
-            icon = style()->standardIcon(QStyle::SP_CommandLink);
+            icon = QIcon(":/icons/settings.svg");
         else if (text == "Messages")
-            icon = style()->standardIcon(QStyle::SP_MessageBoxQuestion);
+            icon = QIcon(":/icons/message.svg");
+            
+        // Fallback to system icons if resources are missing
+        if (icon.isNull()) {
+            if (text == "Home")
+                icon = style()->standardIcon(QStyle::SP_DirHomeIcon);
+            else if (text == "Obfuscation")
+                icon = style()->standardIcon(QStyle::SP_FileIcon);
+            else if (text == "Encryption")
+                icon = style()->standardIcon(QStyle::SP_DriveFDIcon);
+            else if (text == "Settings")
+                icon = style()->standardIcon(QStyle::SP_FileDialogDetailedView);
+            else if (text == "Messages")
+                icon = style()->standardIcon(QStyle::SP_MessageBoxInformation);
+        }
     } else {
         icon = QIcon(iconPath);
     }
     
     setIcon(icon);
-    setIconSize(QSize(16, 16));  // Smaller icon size for minimalistic look
+    setIconSize(QSize(24, 24));  // Material Design icon size
+    
+    // Set text alignment with proper padding for Material look
+    setStyleSheet("text-align: left; padding-left: 16px;");
 }
 
 void SidebarButton::setActive(bool active)
@@ -43,7 +68,7 @@ Sidebar::Sidebar(QWidget *parent)
     : QWidget(parent)
 {
     setObjectName("sidebar");
-    setFixedWidth(200);
+    setFixedWidth(240);  // Material Design navigation drawer width
     setupUI();
 }
 
@@ -53,14 +78,47 @@ void Sidebar::setupUI()
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
 
-    // Add SpectreGuard title
+    // App header/brand area with elevation
+    QWidget *headerWidget = new QWidget();
+    headerWidget->setObjectName("sidebarHeader");
+    headerWidget->setMinimumHeight(64);  // Material spec for app bar height
+    
+    QHBoxLayout *headerLayout = new QHBoxLayout(headerWidget);
+    headerLayout->setContentsMargins(16, 0, 16, 0);
+    
+    // App logo (can be replaced with your actual logo)
+    QLabel *logoLabel = new QLabel();
+    logoLabel->setFixedSize(32, 32);
+    QPixmap logoPix(32, 32);
+    logoPix.fill(Qt::transparent);
+    QPainter painter(&logoPix);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(QColor("#6200EE"));  // Material Design primary color
+    painter.setPen(Qt::NoPen);
+    painter.drawRoundedRect(0, 0, 32, 32, 8, 8);
+    logoLabel->setPixmap(logoPix);
+    
+    // Title with Material Design typography
     QLabel *titleLabel = new QLabel("SpectreGuard");
     titleLabel->setObjectName("sidebarTitle");
-    titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    titleLabel->setContentsMargins(20, 20, 20, 20);
-    mainLayout->addWidget(titleLabel);
+    
+    headerLayout->addWidget(logoLabel);
+    headerLayout->addWidget(titleLabel);
+    headerLayout->addStretch();
+    
+    mainLayout->addWidget(headerWidget);
+    
+    // Divider
+    QFrame *divider = new QFrame();
+    divider->setFrameShape(QFrame::HLine);
+    divider->setFrameShadow(QFrame::Plain);
+    divider->setObjectName("sidebarDivider");
+    mainLayout->addWidget(divider);
+    
+    // Add some spacing
+    mainLayout->addSpacing(8);
 
-    // Create buttons
+    // Create navigation buttons
     homeButton = new SidebarButton("Home");
     homeButton->setObjectName("homeButton");
     
@@ -76,7 +134,7 @@ void Sidebar::setupUI()
     messagesButton = new SidebarButton("Messages");
     messagesButton->setObjectName("messagesButton");
 
-    // Add buttons to layout
+    // Add buttons to layout with proper spacing
     mainLayout->addWidget(homeButton);
     mainLayout->addWidget(obfuscationButton);
     mainLayout->addWidget(encryptionButton);

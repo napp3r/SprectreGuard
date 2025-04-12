@@ -13,6 +13,12 @@ class ObfuscationWidget : public QWidget {
 public:
     explicit ObfuscationWidget(QWidget *parent = nullptr);
 
+public slots:
+    void openFile(const QString &filePath);
+
+signals:
+    void fileProcessed(); // Signal emitted when a file is successfully processed
+
 private slots:
     void browseFile();
     void processFile();

@@ -21,6 +21,9 @@ set(PROJECT_SOURCES
     sidebar.h sidebar.cpp
     encryptionwidget.h encryptionwidget.cpp
     settingswidget.h settingswidget.cpp
+    historywidget.h historywidget.cpp
+    obfuscationwidget.h obfuscationwidget.cpp
+    filehistory.h filehistory.cpp
 )
 
 qt_add_resources(RESOURCES resources.qrc) # Explicit resource addition
@@ -32,6 +35,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${RESOURCES}
         historywidget.h historywidget.cpp
         obfuscationwidget.h obfuscationwidget.cpp
+        filehistory.h filehistory.cpp
     )
 else()
     if(ANDROID)
@@ -43,6 +47,9 @@ else()
         add_executable(asd
             ${PROJECT_SOURCES}
             ${RESOURCES}
+            historywidget.h historywidget.cpp
+            obfuscationwidget.h obfuscationwidget.cpp
+            filehistory.h filehistory.cpp
         )
     endif()
 endif()

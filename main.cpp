@@ -18,6 +18,11 @@ void loadStyleSheet(QApplication &app) {
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    
+    // Set organization and application names for QSettings
+    QCoreApplication::setOrganizationName("SpectreGuard");
+    QCoreApplication::setApplicationName("SpectreGuard");
+    
     loadStyleSheet(app);
 
     MainWindow window;

@@ -1,4 +1,5 @@
 #include "obfuscationwidget.h"
+#include "filehistory.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFrame>
@@ -89,6 +90,15 @@ void ObfuscationWidget::browseFile() {
     }
 }
 
+void ObfuscationWidget::openFile(const QString &filePath) {
+    if (QFile::exists(filePath)) {
+        currentFilePath = filePath;
+        selectLabel->setText(QFileInfo(filePath).fileName());
+    } else {
+        QMessageBox::warning(this, "Error", "File not found: " + filePath);
+    }
+}
+
 QString ObfuscationWidget::getObfuscationLevel() const {
     QSettings settings;
     return settings.value("obfuscation/level", "Low").toString();
@@ -156,8 +166,14 @@ void ObfuscationWidget::processFile() {
 
     QString outputPath = currentFilePath + ".obfuscated";
     if (obfuscateFile(currentFilePath, outputPath)) {
+        // Add to file history
+        FileHistory::addEntry(currentFilePath, getObfuscationLevel(), "Obfuscation");
+        
         QMessageBox::information(this, "Success", 
             "File obfuscated successfully!\nSaved as: " + outputPath);
+            
+        // Emit signal that file was processed
+        emit fileProcessed();
     } else {
         QMessageBox::critical(this, "Error", 
             "Failed to obfuscate file. Please check file permissions.");

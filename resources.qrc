@@ -2,5 +2,10 @@
 <RCC version="1.0">
     <qresource prefix="/">
         <file>styles.qss</file>
+        <file>icons/home.svg</file>
+        <file>icons/code.svg</file>
+        <file>icons/lock.svg</file>
+        <file>icons/settings.svg</file>
+        <file>icons/message.svg</file>
     </qresource>
 </RCC>

@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QApplication>
 #include <QFile>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // Load stylesheet
@@ -28,15 +29,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     stackedWidget = new QStackedWidget;
 
     // Home page (History)
-    HistoryWidget *historyPage = new HistoryWidget;
+    historyPage = new HistoryWidget;
     stackedWidget->addWidget(historyPage);
+    connect(historyPage, &HistoryWidget::openFile, this, &MainWindow::openFileFromHistory);
+    
+    // Ensure history is loaded at startup
+    QTimer::singleShot(100, historyPage, &HistoryWidget::refreshTable);
 
     // Obfuscation page
-    ObfuscationWidget *obfuscationPage = new ObfuscationWidget;
+    obfuscationPage = new ObfuscationWidget;
     stackedWidget->addWidget(obfuscationPage);
+    connect(obfuscationPage, &ObfuscationWidget::fileProcessed, [this]() {
+        historyPage->refreshTable();
+    });
 
     // Encryption page
-    EncryptionWidget *encryptionPage = new EncryptionWidget;
+    encryptionPage = new EncryptionWidget;
     stackedWidget->addWidget(encryptionPage);
 
     // Settings page
@@ -84,6 +92,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
 void MainWindow::switchPage(int index) {
     stackedWidget->setCurrentIndex(index);
+    
+    // Refresh history when switching to the home page
+    if (index == 0 && historyPage) {
+        historyPage->refreshTable();
+    }
+}
+
+void MainWindow::openFileFromHistory(const QString &filePath, const QString &processType) {
+    if (processType == "Obfuscation") {
+        switchPage(1); // Switch to obfuscation page
+        // Now we need to tell the obfuscation page to open this file
+        if (obfuscationPage) {
+            QMetaObject::invokeMethod(obfuscationPage, "openFile", 
+                                      Q_ARG(QString, filePath));
+        }
+    } else if (processType == "Encryption") {
+        switchPage(2); // Switch to encryption page
+        // Tell the encryption page to open this file (if we've implemented that)
+        // This would be similar to the obfuscation page code
+    }
 }
 
 MainWindow::~MainWindow() {}
