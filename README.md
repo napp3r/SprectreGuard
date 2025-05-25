@@ -70,13 +70,9 @@ The wrapper increases reverse engineering time from **minutes to hours or even d
 
 - C++ Compiler (e.g., `g++`)
 - [Qt Creator](https://www.qt.io/)
-- [UPX](https://upx.github.io/)
 
 ### Installation
-
-```bash
-git clone https://github.com/<your-username>/anti-re-wrapper.git
-cd anti-re-wrapper
+git clone https://github.com/napp3r/SprectreGuard.git
 # Open with Qt Creator and build the project
 ```
 
@@ -92,12 +88,6 @@ cd anti-re-wrapper
 
 ---
 
-## 📘 Documentation
-
-See the full thesis in [Diploma_new.pdf](./Diploma_new.pdf) for a complete analysis, methodology, and testing approach.
-
----
-
 ## 📄 License
 
 This project is open-source and licensed under the MIT License.
@@ -106,5 +96,5 @@ This project is open-source and licensed under the MIT License.
 
 ## 📬 Contact
 
-- **Meirambek Bekarys**: [email@example.com]  
-- **Karatay Dair**: [email@example.com]
+- **Meirambek Bekarys**: [bekarys.meirambek@gmail.com]  
+- **Karatay Dair**: [karatay.dair@gmail.com]
