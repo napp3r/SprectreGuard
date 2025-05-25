@@ -1,13 +1,15 @@
-#ifndef SETTINGSWIDGET_H
-#define SETTINGSWIDGET_H
+#pragma once
 
 #include <QWidget>
 #include <QLabel>
-#include <QPushButton>
-#include <QRadioButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QPushButton>
+#include <QRadioButton>
 #include <QButtonGroup>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QFileDialog>
 
 class SettingsWidget : public QWidget
 {
@@ -16,37 +18,52 @@ class SettingsWidget : public QWidget
 public:
     explicit SettingsWidget(QWidget *parent = nullptr);
 
+private slots:
+    void onSaveChanges();
+    void onBrowseLLVMPath();
+    void onBrowseSourceProtectionPath();
+    void onBrowseExeProtectionPath();
+
 private:
-    // UI components
+    void setupUI();
+    void setupConnections();
+
+    // Title
     QLabel *titleLabel;
-    
-    // Profile section
-    QLabel *profilePhotoLabel;
-    QLabel *nameLabel;
-    QPushButton *changePhotoButton;
-    
-    // Obfuscation level section
+
+    // Obfuscation level
     QLabel *obfuscationLevelLabel;
+    QButtonGroup *obfuscationLevelGroup;
     QRadioButton *lowRadioButton;
     QRadioButton *mediumRadioButton;
     QRadioButton *highRadioButton;
-    QButtonGroup *obfuscationLevelGroup;
-    
-    // VM detection section
+
+    // VM detection
     QLabel *vmDetectionLabel;
+    QButtonGroup *vmDetectionGroup;
     QRadioButton *onRadioButton;
     QRadioButton *offRadioButton;
-    QButtonGroup *vmDetectionGroup;
     
+    // LLVM obfuscation settings
+    QCheckBox *useLLVMObfuscationCheckbox;
+    QLabel *llvmPathLabel;
+    QLineEdit *llvmPathEdit;
+    QPushButton *browseLLVMPathButton;
+    QCheckBox *controlFlowFlatteningCheckbox;
+    QCheckBox *instructionSubstitutionCheckbox;
+    QCheckBox *bogusControlFlowCheckbox;
+    QCheckBox *deadCodeInsertionCheckbox;
+    QCheckBox *stringEncryptionCheckbox;
+    
+    // Output directories settings
+    QLabel *outputPathsLabel;
+    QLabel *sourceProtectionPathLabel;
+    QLineEdit *sourceProtectionPathEdit;
+    QPushButton *browseSourceProtectionPathButton;
+    QLabel *exeProtectionPathLabel;
+    QLineEdit *exeProtectionPathEdit;
+    QPushButton *browseExeProtectionPathButton;
+
     // Save button
     QPushButton *saveChangesButton;
-    
-    void setupUI();
-    void setupConnections();
-    
-private slots:
-    void onSaveChanges();
-    void onChangePhoto();
 };
-
-#endif // SETTINGSWIDGET_H 

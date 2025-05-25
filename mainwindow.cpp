@@ -1,24 +1,26 @@
 #include "mainwindow.h"
-#include "historywidget.h"
-#include "obfuscationwidget.h"
-#include "encryptionwidget.h"
-#include "settingswidget.h"
-#include "sidebar.h"
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QLabel>
 #include <QApplication>
 #include <QFile>
+#include <QHBoxLayout>
+#include <QLabel>
 #include <QTimer>
+#include <QVBoxLayout>
+#include <QWidget>
+#include "encryptionwidget.h"
+#include "historywidget.h"
+#include "obfuscationwidget.h"
+#include "settingswidget.h"
+#include "sidebar.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+{
     // Load stylesheet
     QFile styleFile(":/styles.qss");
     styleFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleFile.readAll());
     qApp->setStyleSheet(styleSheet);
-    
+
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
@@ -32,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     historyPage = new HistoryWidget;
     stackedWidget->addWidget(historyPage);
     connect(historyPage, &HistoryWidget::openFile, this, &MainWindow::openFileFromHistory);
-    
+
     // Ensure history is loaded at startup
     QTimer::singleShot(100, historyPage, &HistoryWidget::refreshTable);
 
@@ -61,18 +63,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     stackedWidget->setCurrentIndex(0);
 
     // Connect sidebar buttons to page switching
-    QList<SidebarButton*> buttons;
-    buttons.append(sidebar->findChild<SidebarButton*>("homeButton"));
-    buttons.append(sidebar->findChild<SidebarButton*>("obfuscationButton"));
-    buttons.append(sidebar->findChild<SidebarButton*>("encryptionButton"));
-    buttons.append(sidebar->findChild<SidebarButton*>("settingsButton"));
-    buttons.append(sidebar->findChild<SidebarButton*>("messagesButton"));
-    
+    QList<SidebarButton *> buttons;
+    buttons.append(sidebar->findChild<SidebarButton *>("homeButton"));
+    buttons.append(sidebar->findChild<SidebarButton *>("obfuscationButton"));
+    buttons.append(sidebar->findChild<SidebarButton *>("encryptionButton"));
+    buttons.append(sidebar->findChild<SidebarButton *>("settingsButton"));
+    buttons.append(sidebar->findChild<SidebarButton *>("messagesButton"));
+
     for (int i = 0; i < buttons.size(); i++) {
         if (buttons[i]) {
-            connect(buttons[i], &QPushButton::clicked, this, [this, i]() {
-                switchPage(i);
-            });
+            connect(buttons[i], &QPushButton::clicked, this, [this, i]() { switchPage(i); });
         }
     }
 
@@ -84,28 +84,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     mainContainer->addWidget(stackedWidget, 1);
 
     centralWidget->setLayout(mainContainer);
-    
+
     // Set window properties
     setWindowTitle("SpectreGuard");
     resize(1000, 700);
 }
 
-void MainWindow::switchPage(int index) {
+void MainWindow::switchPage(int index)
+{
     stackedWidget->setCurrentIndex(index);
-    
+
     // Refresh history when switching to the home page
     if (index == 0 && historyPage) {
         historyPage->refreshTable();
     }
 }
 
-void MainWindow::openFileFromHistory(const QString &filePath, const QString &processType) {
+void MainWindow::openFileFromHistory(const QString &filePath, const QString &processType)
+{
     if (processType == "Obfuscation") {
         switchPage(1); // Switch to obfuscation page
         // Now we need to tell the obfuscation page to open this file
         if (obfuscationPage) {
-            QMetaObject::invokeMethod(obfuscationPage, "openFile", 
-                                      Q_ARG(QString, filePath));
+            QMetaObject::invokeMethod(obfuscationPage, "openFile", Q_ARG(QString, filePath));
         }
     } else if (processType == "Encryption") {
         switchPage(2); // Switch to encryption page
