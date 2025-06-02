@@ -1,10 +1,11 @@
-#include <QFile>
 #include <QApplication>
-#include <QMessageBox>
 #include <QDebug>
+#include <QFile>
+#include <QMessageBox>
 #include "mainwindow.h"
 
-void loadStyleSheet(QApplication &app) {
+void loadStyleSheet(QApplication &app)
+{
     QFile file(":/styles.qss"); // Загружаем из ресурсов
     if (file.open(QFile::ReadOnly)) {
         QString styleSheet = file.readAll();
@@ -15,14 +16,14 @@ void loadStyleSheet(QApplication &app) {
     }
 }
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     QApplication app(argc, argv);
-    
+
     // Set organization and application names for QSettings
     QCoreApplication::setOrganizationName("SpectreGuard");
     QCoreApplication::setApplicationName("SpectreGuard");
-    
+
     loadStyleSheet(app);
 
     MainWindow window;
